@@ -8,9 +8,10 @@ export default class CharacterList extends Component {
       <div className="container">
         {list.map((char, index) => {
           return (
-            <Character key={index} char={char}>
+            <div>
+              <Character key={index} char={char} />
               <button onClick={this.props.restart}>Tentar novamente</button>
-            </Character>
+            </div>
           );
         })}
       </div>
