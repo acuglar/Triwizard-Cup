@@ -1,6 +1,7 @@
 import { Component } from "react";
 import './App.css';
-import CharacterRender from "./components/CharacterRender";
+import CharacterList from "./components/CardList";
+import Start from "./components/Start";
 
 
 export default class App extends Component {
@@ -9,10 +10,11 @@ export default class App extends Component {
     Hufflepuff: [],
     Ravenclaw: [],
     Slytherin: [],
+    charList: [],
+    start: false,
   }
 
   getCharacters = () => {
-    const { Gryffindor, Hufflepuff, Ravenclaw, Slytherin } = this.state;
     fetch(`http://hp-api.herokuapp.com/api/characters/students`)
       .then((response) => response.json())
       .then((response) => {
@@ -22,10 +24,10 @@ export default class App extends Component {
         const responseSlytherin = response.filter(el => el.house === 'Slytherin');
 
         this.setState({
-          Gryffindor: [...Gryffindor, ...responseGryffindor],
-          Hufflepuff: [...Hufflepuff, ...responseHufflepuff],
-          Ravenclaw: [...Ravenclaw, ...responseRavenclaw],
-          Slytherin: [...Slytherin, ...responseSlytherin]
+          Gryffindor: [...responseGryffindor],
+          Hufflepuff: [...responseHufflepuff],
+          Ravenclaw: [...responseRavenclaw],
+          Slytherin: [...responseSlytherin]
         })
       });
   }
@@ -34,13 +36,30 @@ export default class App extends Component {
     this.getCharacters();
   }
 
+  getRandom = () => {
+    const { Gryffindor, Hufflepuff, Ravenclaw, Slytherin } = this.state;
+    const charList = [];
+    charList.push(Gryffindor[Math.floor(Math.random() * Gryffindor.length)])
+    charList.push(Hufflepuff[Math.floor(Math.random() * Hufflepuff.length)])
+    charList.push(Ravenclaw[Math.floor(Math.random() * Ravenclaw.length)])
+    charList.push(Slytherin[Math.floor(Math.random() * Slytherin.length)])
+    charList.splice(Math.floor(Math.random() * 4), 1)
+
+    this.setState({ charList: charList })
+  }
+
+  getStart = () => {
+    const { start } = this.state
+    this.setState({ start: !start })
+  }
+
   render() {
-    /*     const random = Math.floor(Math.random() * Slytherin.length); */
+    console.log(this.state.charList)
+    console.log(this.state.Gryffindor[0])
+
     return (
-      <div className="App" >
-        <CharacterRender characters={this.state.Slytherin}></CharacterRender>
-        <CharacterRender characters={this.state.Gryffindor}></CharacterRender>
-        <CharacterRender characters={this.state.Ravenclaw}></CharacterRender>
+      <div>
+        {!this.state.start ? <Start alternar={this.getStart}></Start> : <CharacterList list={this.state.charList} restart={this.getRandom}></CharacterList>}
       </div>
     );
   }
